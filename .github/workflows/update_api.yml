@@ -23,14 +23,16 @@ jobs:
       - name: Install dependencies
         run: pip install pandas requests
 
-      - name: Run visibility calculation script
+      - name: Run Coral & Dive Sites visibility scripts
         env:
           AFCD_FCZ_API_URL: ${{ secrets.AFCD_FCZ_API_URL }}
-        run: python update_visibility.py
+        run: |
+          if [ -f "update_visibility.py" ]; then python update_visibility.py; fi
+          python update_dive_sites_visibility.py
 
-      - name: Commit and push updated JSON/CSV API
+      - name: Commit and push updated JSON/CSV APIs
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add visibility_latest.csv visibility_api.json
+          git add *.csv *.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update visibility API [skip ci]" && git push)
