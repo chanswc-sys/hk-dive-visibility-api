@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -28,7 +28,7 @@ jobs:
           AFCD_FCZ_API_URL: ${{ secrets.AFCD_FCZ_API_URL }}
         run: |
           if [ -f "update_visibility.py" ]; then python update_visibility.py; fi
-          python update_dive_sites_visibility.py
+          if [ -f "update_dive_sites_visibility.py" ]; then python update_dive_sites_visibility.py; fi
 
       - name: Commit and push updated JSON/CSV APIs
         run: |
