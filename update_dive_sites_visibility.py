@@ -270,7 +270,14 @@ def calculate_dive_site_visibility(site_key, rainfall_dict, wind_dict, tide_tren
     }
 
 def main():
-    input_csv = "HK_Dive_Sites_ArcGIS-v2_3.csv"
+    import glob
+    # 自動尋找儲存庫內的潛點 CSV（兼容 HK_Dive_Sites_ArcGIS-v2.csv 或 HK_Dive_Sites_ArcGIS-v2_3.csv）
+    candidates = [f for f in glob.glob("HK_Dive_Sites*.csv") if "latest" not in f]
+    if not candidates:
+        raise FileNotFoundError("找不到 HK_Dive_Sites 開頭的 CSV 檔案，請確認已上傳至 GitHub 根目錄！")
+    input_csv = sorted(candidates)[-1]
+    print(f"正在讀取潛點檔案: {input_csv}")
+
     df = pd.read_csv(input_csv)
 
     rainfall_dict, wind_dict, tide_trend = fetch_hko_data()
@@ -288,7 +295,6 @@ def main():
     df_vis = pd.DataFrame(vis_results)
     df_out = pd.concat([df, df_vis], axis=1)
 
-    # 輸出 CSV 與 GeoJSON API
     df_out.to_csv("dive_sites_visibility_latest.csv", index=False, encoding="utf-8-sig")
 
     features = []
